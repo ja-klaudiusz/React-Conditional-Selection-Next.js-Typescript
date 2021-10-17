@@ -1,15 +1,16 @@
 import React from "react";
+import { CategoryItemProps } from "../../interfaces";
 import Options from "./Options";
 const CategoryItem = ({
   categoryName,
-  children,
+  categoryChildren,
   updateSelection,
   selection,
   showRequired,
-}) => {
+}: CategoryItemProps) => {
   const showCategoryName = () => {
     let show = false;
-    for (let child of children) {
+    for (let child of categoryChildren) {
       if (child.isValid) {
         show = true;
         break;
@@ -25,7 +26,7 @@ const CategoryItem = ({
         </h3>
       )}
 
-      {children.map((option, i) => {
+      {categoryChildren.map((option, i) => {
         return (
           option.isVisible &&
           option.isValid && (
@@ -37,7 +38,7 @@ const CategoryItem = ({
               code={option.code}
               isRequired={option.isRequired}
               isValid={option.isValid}
-              children={option.validValues}
+              optionChildren={option.validValues}
               updateSelection={updateSelection}
             />
           )

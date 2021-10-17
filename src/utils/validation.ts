@@ -1,4 +1,5 @@
 import clonedeep from "lodash.clonedeep";
+import { Data, Selection, ValidData, Stats } from "../interfaces";
 import { checkStats, validateRule } from "./index";
 
 // ----------------------------------------------------------------------
@@ -7,13 +8,17 @@ import { checkStats, validateRule } from "./index";
 // License: MITNFA
 // ----------------------------------------------------------------------
 
-export const validate = (data, selection) => {
-  return new Promise(async (resolve, reject) => {
+export const validate = (data: Data, selection: Selection) => {
+  return new Promise<{
+    validData: ValidData;
+    newSelection: Selection;
+    stats: Stats;
+  }>(async (resolve, reject) => {
     let forceUpdate = false;
 
     let newSelection = { ...selection };
-    let flatData = {};
-    let validData = {};
+    let flatData: Data = {};
+    let validData: ValidData = {};
     let toSelectIds = [];
     let requiredIds = [];
     for (let key in data) {
@@ -21,14 +26,18 @@ export const validate = (data, selection) => {
       const code = record.code;
       const categoryCode = record.category.code;
 
-      record.isValid = validateRule(newSelection, record.rules);
+      record = {
+        ...record,
+        isValid: validateRule(newSelection, record.rules),
+      };
       record.validValues = [];
 
       for (let option in record.options) {
         if (record.isValid) {
           let value = record.options[option];
-          value.isValid = validateRule(newSelection, value.rules);
-          if (value.isValid) record.validValues.push(value);
+
+          if (value.isValid || validateRule(newSelection, value.rules))
+            record.validValues.push({ ...value, isValid: true });
         } else {
           record.options[option].isValid = false;
         }
@@ -66,11 +75,12 @@ export const validate = (data, selection) => {
       let record = flatData[key];
       if (record) {
         let isOK = false;
-
-        for (let value in record.validValues) {
-          if (newSelection[key] == record.validValues[value].code) {
-            isOK = true;
-            break;
+        if (record.validValues) {
+          for (let value of record.validValues) {
+            if (newSelection[key] == value.code) {
+              isOK = true;
+              break;
+            }
           }
         }
 

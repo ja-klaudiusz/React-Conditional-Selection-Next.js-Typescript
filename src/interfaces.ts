@@ -49,7 +49,7 @@ export interface ConditionalSelectionProps {
 export interface OptionsProps {
   name: string;
   code: string;
-  optionChildren: ValidDataCategoryChildrenOptions[];
+  optionChildren?: ValidDataCategoryChildrenOptions[];
   isRequired: boolean;
   isValid: boolean;
   selection: Selection;

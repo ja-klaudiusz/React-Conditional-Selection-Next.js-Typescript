@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Select, { components } from "react-select";
+import Select, {
+  components,
+  StylesConfig,
+  SingleValueProps,
+  PlaceholderProps,
+  OptionProps,
+} from "react-select";
+import { OptionsProps } from "../../interfaces";
 
 const bgColorHasValue = "#97d498";
 const bgColorEmpty = "#ead5ff";
 
-const singleOption = ({ children, ...props }) => {
+const singleOption = ({ children, ...props }: OptionProps) => {
   return (
     <components.Option {...props}>
       <div className="flex flex-col justify-center pl-2">{children}</div>
@@ -12,7 +19,7 @@ const singleOption = ({ children, ...props }) => {
   );
 };
 
-const singleValue = ({ children, ...props }) => {
+const singleValue = ({ children, ...props }: SingleValueProps) => {
   return (
     <components.SingleValue {...props}>
       <div className="flex flex-row justify-center items-center text-lg">
@@ -33,9 +40,11 @@ const singleValue = ({ children, ...props }) => {
   );
 };
 
-const Placeholder = (props) => {
-  const { isDisabled, showRequired, selectProps, hasValue } = props;
-  const { isRequired } = selectProps;
+const Placeholder = (
+  props: PlaceholderProps & { showRequired: boolean; isRequired: boolean }
+) => {
+  const { isDisabled, showRequired, isRequired, hasValue } = props;
+
   return (
     <components.Placeholder {...props}>
       <div className="flex flex-row justify-center items-center text-lg">
@@ -71,15 +80,15 @@ const Placeholder = (props) => {
 const Options = ({
   name,
   code,
-  children,
+  optionChildren,
   updateSelection,
   isRequired,
   isValid,
   selection,
   showRequired,
-}) => {
-  const [value, setValue] = useState(null);
-  const childrenNotExist = children.length === 0;
+}: OptionsProps) => {
+  const [value, setValue] = useState<string | null>(null);
+  const childrenNotExist = optionChildren ? optionChildren.length === 0 : true;
   const disabled = !isValid || childrenNotExist;
 
   useEffect(() => {
@@ -91,7 +100,7 @@ const Options = ({
     value && setValue(value);
   }, [selection[code]]);
 
-  const colourStyles = {
+  const colourStyles: StylesConfig = {
     valueContainer: (styles, { hasValue }) => {
       return {
         ...styles,
@@ -122,7 +131,6 @@ const Options = ({
         "&:focus": {
           borderColor: "#c5d4e0",
         },
-        cursor: "pointer",
       };
     },
     placeholder: (base) => {
@@ -203,32 +211,39 @@ const Options = ({
   };
 
   return (
-    <Select
-      openMenuOnFocus={true}
-      styles={colourStyles}
-      value={children.filter(({ code }) => code === value)}
-      placeholder={name}
-      isDisabled={children.length === 1 || disabled}
-      isRequired={isRequired}
-      onChange={(option) => {
-        const newSelection = {
-          ...selection,
-          [code]: option.code,
-        };
-        updateSelection(newSelection);
-      }}
-      name={code}
-      getOptionLabel={(option) => option.name}
-      getOptionValue={(option) => option.code}
-      options={children}
-      components={{
-        Option: singleOption,
-        SingleValue: singleValue,
-        Placeholder: (props) => (
-          <Placeholder showRequired={showRequired} {...props} />
-        ),
-      }}
-    />
+    <>
+      {optionChildren ? (
+        <Select
+          openMenuOnFocus={true}
+          styles={colourStyles}
+          value={optionChildren.filter(({ code }) => code === value)}
+          placeholder={name}
+          isDisabled={optionChildren.length === 1 || disabled}
+          onChange={(option: any): void => {
+            const newSelection = {
+              ...selection,
+              [code]: option.code,
+            };
+            updateSelection(newSelection);
+          }}
+          name={code}
+          getOptionLabel={(option: any): string => option.name}
+          getOptionValue={(option: any): string => option.code}
+          options={optionChildren}
+          components={{
+            Option: singleOption,
+            SingleValue: singleValue,
+            Placeholder: (props) => (
+              <Placeholder
+                showRequired={showRequired}
+                isRequired={isRequired}
+                {...props}
+              />
+            ),
+          }}
+        />
+      ) : null}
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
 /* eslint-disable */
+// @ts-nocheck
 const _ = require("lodash");
 /* query v0.3.2 (15-05-2020) | Copyright © Pieter Sheth-Voss | License: MITNFA | https://github.com/protobi/query */
 
