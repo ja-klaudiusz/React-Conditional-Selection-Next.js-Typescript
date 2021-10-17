@@ -127,4 +127,4 @@ Business rules are defined on almost every row of data. Each time when object of
  }
 ```
 
-Try it on CodeSandbox [React Conditional Selection (typescript)](#)
+Try it on CodeSandbox [React Conditional Selection (typescript)](https://codesandbox.io/s/react-conditional-selection-typescript-ol90x?file=/src/pages/index.tsx)
